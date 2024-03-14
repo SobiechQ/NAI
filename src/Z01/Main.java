@@ -1,47 +1,39 @@
 package Z01;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
-
-//sepal_length,sepal_width,petal_length,petal_width,species
-record Flower(double sepalLength, double sepalWidth, double petalLength, double petalWidth, String species) {
-    //tutaj przyjmij tablice jako jeden parametr
-    //rzuć error jak size inny
-}
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
-        //dane testowe losowe 30%
-        var daneBazowe = new LinkedList<Flower>();
+        KNN knn;
         try (var reader = new BufferedReader(new FileReader("src/Z01/IRIS.csv"))) {
+            var vectors = new LinkedList<Vector>();
             var toShuffle = reader.lines()
                     .skip(1)
                     .map(s -> s.split(","))
-                    .map(s -> new Flower(Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]), Double.parseDouble(s[3]), s[4]))
+                    .map(s -> new Vector(s[4], Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]), Double.parseDouble(s[3])))
                     .collect(Collectors.toList());
             while (!toShuffle.isEmpty()) {
-                int index = (int) (Math.random() * toShuffle.size());
-                daneBazowe.addLast(toShuffle.get(index));
+                final int index = (int) (Math.random() * toShuffle.size());
+                vectors.addLast(toShuffle.get(index));
                 toShuffle.remove(index);
             }
-
+            final int testSize = (int) (vectors.size() * 0.3);
+            knn = new KNN(vectors.stream().skip(testSize).toList(), vectors.stream().limit(testSize).toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        var daneTestowe = daneBazowe.stream()
-                .limit((long) (daneBazowe.size()*0.3))
-                .collect(Collectors.toList());
-        System.out.println(daneBazowe.size());
-        daneBazowe.removeAll(daneTestowe);
+        Vector testVector = knn.getVectorsTest().stream().findFirst().get();
 
-        System.out.println(daneTestowe.size());
-        System.out.println(daneBazowe.size());
-
+        knn.testVecotrs(4);
     }
 }
