@@ -32,8 +32,10 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Vector testVector = knn.getVectorsTest().stream().findFirst().get();
+//        Vector testVector = knn.getVectorsTest().stream().findFirst().get();
+//        System.out.println(testVector);
+//        System.out.println(knn.getClosestTo(testVector, 0));
 
-        knn.testVecotrs(4);
+        knn.testVecotrs(10);
     }
 }
