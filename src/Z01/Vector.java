@@ -15,7 +15,7 @@ public record Vector(String result, double... x) {
 
     public double lengthTo(Vector vector) {
         if (this.x.length != vector.x.length) {
-            throw new IllegalArgumentException("Vectors must have the same length");
+            throw new IllegalArgumentException("Vectors must have the same domain");
         }
         return Math.sqrt(IntStream.range(0, this.x.length)
                 .mapToObj(i -> new double[]{this.x[i], vector.x[i]})

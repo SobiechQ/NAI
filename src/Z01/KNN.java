@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import Utils.Utils;
 
 public class KNN {
     private final Collection<Vector> vectorsTest;
@@ -13,6 +16,13 @@ public class KNN {
         this.vectorsTest = vectorsTest;
         this.vectorsBase = vectorsBase;
     }
+    public KNN(Collection<Vector> vectors){
+        var list = new LinkedList<>(vectors);
+        Utils.shuffle(list);
+        final int testSize = (int) (list.size() * 0.3);
+        this.vectorsTest = new LinkedList<>(list).subList(0, testSize);
+        this.vectorsBase = new LinkedList<>(list).subList(testSize, list.size());
+    }
     public record KnnResult(String result, double probability) {
         @Override
         public String toString() {
@@ -20,51 +30,29 @@ public class KNN {
         }
     }
     public KnnResult getClosestTo(Vector vector, int k){
-        var map = vectorsBase.stream()
-                .map(v -> new Object[]{v, vector.lengthTo(v)})
-                .sorted(Comparator.comparingDouble(value -> (Double) value[1]))
-                .map(pair -> (Vector) pair[0])
+        var list = new LinkedList<>(this.vectorsBase);
+
+        Utils.sort(list, Comparator.comparingDouble(vector::lengthTo));
+
+        var map = list.stream()
                 .limit(k)
                 .collect((Supplier<Map<String, Integer>>) HashMap::new,
                         (stringIntegerMap, vector1) -> stringIntegerMap.put(vector1.result(), stringIntegerMap.getOrDefault(vector1.result(), 0) + 1),
                         (stringIntegerMap, stringIntegerMap2) -> {});
+
         var entry = map.entrySet().stream()
                 .max(Comparator.comparingInt(Map.Entry::getValue))
-                .orElse(new Map.Entry<>() {
-                    @Override
-                    public String getKey() {
-                        return "Not Found";
-                    }
-
-                    @Override
-                    public Integer getValue() {
-                        return -1;
-                    }
-
-                    @Override
-                    public Integer setValue(Integer value) {
-                        throw new UnsupportedOperationException();
-                    }
-                });
+                .orElseThrow(()-> new RuntimeException("No result"));
 
         return new KnnResult(entry.getKey(), (double) entry.getValue() / k);
-
-
     }
 
     public void testVecotrs(int k){
-        this.vectorsTest
-                .forEach(v -> {
-                    System.out.printf("Test: [%s]\n", v);
-                    System.out.printf("Result: [%s]\n\n", getClosestTo(v, k));
-                });
-    }
-
-    public Collection<Vector> getVectorsTest() {
-        return vectorsTest;
-    }
-
-    public Collection<Vector> getVectorsBase() {
-        return vectorsBase;
+        var mediumPropability = this.vectorsTest.stream()
+                .map(v->this.getClosestTo(v, k))
+                .mapToDouble(KnnResult::probability)
+                .average()
+                .orElseThrow(()-> new RuntimeException("No result"));
+        System.out.printf("For k: [%d] medium propability: [%f]\n", k, mediumPropability);
     }
 }
