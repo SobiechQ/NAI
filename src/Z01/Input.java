@@ -1,15 +1,13 @@
 package Z01;
 
-import Utils.Utils;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import Utils.Vector;
 
 public class Input {
     private final KNN knn;

@@ -1,12 +1,10 @@
 package Z01;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import Utils.Utils;
+import Utils.Vector;
 
 public class KNN {
     private final Collection<Vector> vectorsTest;
