@@ -2,10 +2,7 @@ package Z02;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -18,6 +15,9 @@ public class Vector implements Iterable<BigDecimal> {
     }
     public Vector(BigDecimal... values) {
         this.values = List.of(values);
+    }
+    public Vector(Vector vector) {
+        this.values = new LinkedList<>(vector.values);
     }
 
     @Override
@@ -79,5 +79,20 @@ public class Vector implements Iterable<BigDecimal> {
         return this.values.size();
     }
 
+    public List<BigDecimal> getValues() {
+        return values;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector that = (Vector) o;
+        return Objects.equals(values, that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(values);
+    }
 }

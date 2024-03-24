@@ -15,6 +15,15 @@ public class VectorWithResult<T> extends Vector implements Iterable<BigDecimal> 
         super(values);
         this.result = result;
     }
+    public VectorWithResult(T result, BigDecimal... values) {
+        super(values);
+        this.result = result;
+    }
+    public VectorWithResult(T result, Vector vector) {
+        super(vector);
+        this.result = result;
+    }
+
 
     @Override
     public String toString() {
